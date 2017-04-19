@@ -2,7 +2,8 @@ import sys
 import mailbox
 import csv
 from email.header import decode_header
-import mail_extract3
+from bs4 import BeautifulSoup
+import unicodedata
 
 infile = './Sidd_April16.mbox'
 outfile = './Sidd_April16.csv'
@@ -15,19 +16,27 @@ def get_message(message):
                 for subpart in part.walk():
                     if subpart.get_content_type() == 'text/plain':
                         body = subpart.get_payload(decode=True)
-                        print body
+                    elif subpart.get_content_type() == 'text/html':
+                        body = BeautifulSoup(subpart.get_payload(decode=True),"lxml").text
             elif part.get_content_type() == 'text/plain':
                 body = part.get_payload(decode=True)
-                print body
+            elif part.get_content_type() == 'text/html':
+                body = BeautifulSoup(part.get_payload(decode=True),"lxml").text
     elif message.get_content_type() == 'text/plain':
         body = message.get_payload(decode=True)
-        print body
+    elif message.get_content_type() == 'text/html':
+        body = BeautifulSoup(message.get_payload(decode=True),"lxml").text
     return body
 
 
 if __name__ == "__main__":
 
-    # writer = csv.writer(open("clean_mai1.csv", "wb"))
+    writer = csv.writer(open("clean_mail2.csv", "wb"))
     for message in mailbox.mbox("../DeepMail1/Sidd_April16.mbox"):
-        print get_decoded_email_body(message)
-        # writer.writerow(["Subject" + str(message["subject"]), "From" + str(message["from"]), "Date" + str(message["date"]), contents])
+        m = get_message(message)
+        contents = ''
+        if isinstance(m, str):
+            contents = m
+        elif isinstance(m, unicode):
+            contents = unicodedata.normalize('NFKD',m).encode('ascii','ignore')
+        writer.writerow(["Subject" + str(message["subject"]), "From " + str(message["from"]), "Date " + str(message["date"]), 'Contents ' + contents])
