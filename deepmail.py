@@ -1,22 +1,56 @@
-import sys
-import mailbox
-import csv
-from email.header import decode_header
+import os
+import pandas as pd
+import nltk
+import gensim
+from gensim import corpora, models, similarities
+import json
 
-infile = './Sidd_April16.mbox'
-outfile = './Sidd_April16.csv'
+sentences = []
+with open('50newstune_articles_text_title.json') as json_data:
+    for line in json_data:
+        article = {}
+        article = json.loads(line)
+        title = nltk.word_tokenize(article['title'].lower())
+        text = nltk.word_tokenize(article['text'].lower())
+        sentences.append(title)
+        sentences.append(text)
 
-def get_message(message):
-    if not message.is_multipart():
-        return message.get_payload()
-    contents = ""
-    for msg in message.get_payload():
-        contents = contents + str(msg.get_payload()) + '\n'
-    return contents
+        # unicodedata.normalize('NFKD',article['title'].decode('utf-8')).encode('ascii','ignore')
 
-if __name__ == "__main__":
+# model = gensim.models.Word2Vec(sentences, size = 200, workers=4)
 
-    writer = csv.writer(open("clean_mail.csv", "wb"))
-    for message in mailbox.mbox("./Sidd_April16.mailbox"):
-        contents = get_message(message)
-        writer.writerow([message["subject"], message["from"], message["date"],contents])
+# model.save('testmodel')
+# model = gensim.models.Word2Vec.load('testmodel')
+# print 'here'
+# for x in model.wv.most_similar(['cat']):
+#     print x
+
+# print model.doesnt_match("Trump Obama Putin tennis".split())
+#model.most_similar([vector])
+
+for x in sentences:
+    if 'cat' in x and 't-shirt' in x:
+        print x
+
+# for x in sentences:
+#     if 'cat' in x:
+#         if('t-shirt' in x):
+#             print ' '.join(x)
+#             print ''
+#         if('ankle' in x):
+#             print ' '.join(x)
+#             print ''
+#         if('spectator' in x):
+#             print ' '.join(x)
+#             print ''
+#     if 'ankle' in x:
+#         if('t-shirt' in x):
+#             print ' '.join(x)
+#             print ''
+#         if('spectator' in x):
+#             print ' '.join(x)
+#             print ''
+#     if 't-shirt' in x:
+#         if('spectator' in x):
+#             print ' '.join(x)
+#             print ''

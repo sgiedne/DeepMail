@@ -33,8 +33,8 @@ def get_message(message):
 
 if __name__ == "__main__":
 
-    writer = csv.writer(open("clean_mail2.csv", "wb"))
-    for message in mailbox.mbox("../inbox.mbox"):
+    writer = csv.writer(open("clean_mail3.csv", "wb"))
+    for message in mailbox.mbox("../DeepMail1/Sidd_April16.mbox"):
         m = get_message(message)
         contents = ''
         if isinstance(m, str):
