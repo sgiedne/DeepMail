@@ -33,7 +33,6 @@ def get_similar(bow,model):
 
 
 model = load_model()
-print 'here'
 list_depth0 = get_similar(input,model)
 
 
