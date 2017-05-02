@@ -22,23 +22,34 @@ with open('50newstune_articles_text_title.json') as json_data:
 
 # model.save('testmodel')
 
-input = ['cat','Pooh','bionic']
+input = 'cat'
 
-def get_similar(bow):
+def load_model():
     model = gensim.models.Word2Vec.load('testmodel')
-    return model.wv.most_similar(bow, topn=30)
+    return model
 
-list_depth0 = get_similar(input)
+def get_similar(bow,model):
+    return model.wv.most_similar(bow, topn=10)
+
+
+model = load_model()
+print 'here'
+list_depth0 = get_similar(input,model)
+
 
 search_result = []
 
-for x in range(0,3):
-    search_result.append([input,list_depth0[x][0]])
-    list_depth1 = get_similar([input,list_depth0[x][0]])
-    search_result.append([list_depth0[x][0], list_depth1[x][0]])
-    search_result.append([input, list_depth1[x][0]])
-    search_result.append([input, list_depth0[x][0], list_depth1[x][0]])
 
+for x in range(0,3):
+    search_result.append([input,list_depth0[x][0]]) #(1,2)
+    list_depth1 = get_similar([input,list_depth0[x][0]],model) 
+    search_result.append([list_depth0[x][0], list_depth1[x][0]]) #(2,5)
+    search_result.append([input, list_depth1[x][0]]) #(1,5)
+    search_result.append([input, list_depth0[x][0], list_depth1[x][0]]) #(1,2,5)
+
+
+for x in search_result:
+    print x
 
 res = set()
 for x in search_result:
@@ -54,4 +65,4 @@ for x in search_result:
 
 for x in res:
     print x
-    print ''
+    print ''    
